@@ -1,0 +1,309 @@
+/*ShopZone is a mini e-commerce database project built using MySQL. It simulates an online shopping platform's backend operations 
+like managing products, customers, orders, payments, and more.
+The project helps in understanding database design, relationships between tables, and applying real-world SQL queries for data analysis and reporting.*/
+
+CREATE DATABASE Sales;
+USE Sales;
+
+SET SQL_SAFE_UPDATES = 1;
+
+CREATE TABLE Customers (
+    customer_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    phone VARCHAR(15),
+    city VARCHAR(50),
+    registered_date DATE
+);
+
+INSERT INTO Customers (name, email, phone, city, registered_date) VALUES
+('Arun Kumar', 'arun.kumar@example.com', '9876543210', 'Chennai', '2023-03-12'),
+('Divya R', 'divya.r@example.com', '9845123467', 'Bangalore', '2023-04-01'),
+('Praveen S', 'praveen.s@example.com', '9887754321', 'Hyderabad', '2023-04-15'),
+('Swathi G', 'swathi.g@example.com', '9823456712', 'Mumbai', '2023-05-01'),
+('Ravi Teja', 'ravi.teja@example.com', '9872314567', 'Delhi', '2023-05-10'),
+('Sneha B', 'sneha.b@example.com', '9843217890', 'Pune', '2023-05-20'),
+('Karthik V', 'karthik.v@example.com', '9801122334', 'Coimbatore', '2023-06-01'),
+('Meena P', 'meena.p@example.com', '9811223344', 'Kochi', '2023-06-10'),
+('Vignesh R', 'vignesh.r@example.com', '9899887766', 'Madurai', '2023-06-15'),
+('Lavanya S', 'lavanya.s@example.com', '9833445566', 'Trichy', '2023-07-01');
+
+CREATE TABLE Categories (
+    category_id INT PRIMARY KEY AUTO_INCREMENT,
+    category_name VARCHAR(100)
+);
+
+INSERT INTO Categories (category_name) VALUES
+('Electronics'),
+('Clothing'),
+('Books'),
+('Home & Kitchen'),
+('Beauty'),
+('Sports'),
+('Toys'),
+('Furniture'),
+('Automotive'),
+('Grocery');
+
+CREATE TABLE Products (
+    product_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100),
+    category_id INT,
+    price DECIMAL(10,2),
+    stock INT,
+    FOREIGN KEY (category_id) REFERENCES Categories(category_id)
+);
+
+INSERT INTO Products (name, category_id, price, stock) VALUES
+('iPhone 14', 1, 79999.00, 25),
+('Samsung Galaxy S22', 1, 69999.00, 30),
+('T-Shirt - Blue', 2, 499.00, 100),
+('Jeans - Black', 2, 999.00, 75),
+('Cookbook for Beginners', 3, 299.00, 50),
+('Fiction Novel', 3, 399.00, 60),
+('Mixer Grinder', 4, 2999.00, 40),
+('Electric Kettle', 4, 1499.00, 35),
+('Face Cream', 5, 799.00, 45),
+('Lipstick Set', 5, 599.00, 55),
+('Football', 6, 899.00, 20),
+('Badminton Racket', 6, 1099.00, 18),
+('Lego Set', 7, 1499.00, 25),
+('Teddy Bear', 7, 899.00, 40),
+('Office Chair', 8, 4999.00, 15),
+('Wooden Table', 8, 7999.00, 10),
+('Car Tyre', 9, 3999.00, 22),
+('Car Shampoo', 9, 499.00, 30),
+('Organic Rice 5kg', 10, 799.00, 50),
+('Sunflower Oil 1L', 10, 199.00, 65);
+
+
+CREATE TABLE Orders (
+    order_id INT PRIMARY KEY AUTO_INCREMENT,
+    customer_id INT,
+    order_date DATE,
+    status VARCHAR(50),
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+);
+
+INSERT INTO Orders (customer_id, order_date, status) VALUES
+(1, '2023-06-01', 'Delivered'),
+(2, '2023-06-03', 'Processing'),
+(3, '2023-06-05', 'Cancelled'),
+(4, '2023-06-07', 'Delivered'),
+(5, '2023-06-08', 'Shipped'),
+(6, '2023-06-10', 'Delivered'),
+(7, '2023-06-12', 'Delivered'),
+(8, '2023-06-15', 'Returned'),
+(9, '2023-06-18', 'Delivered'),
+(10, '2023-06-20', 'Shipped');
+
+CREATE TABLE OrderItems (
+    order_item_id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT,
+    product_id INT,
+    quantity INT,
+    price DECIMAL(10,2),
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
+    FOREIGN KEY (product_id) REFERENCES Products(product_id)
+);
+
+INSERT INTO OrderItems (order_id, product_id, quantity, price) VALUES
+(1, 1, 1, 79999.00),
+(1, 3, 2, 499.00),
+(2, 4, 1, 999.00),
+(2, 5, 1, 299.00),
+(3, 6, 1, 399.00),
+(4, 7, 1, 2999.00),
+(4, 8, 2, 1499.00),
+(5, 9, 1, 799.00),
+(5, 10, 2, 599.00),
+(6, 11, 1, 899.00),
+(6, 12, 1, 1099.00),
+(7, 13, 1, 1499.00),
+(7, 14, 1, 899.00),
+(8, 15, 1, 4999.00),
+(8, 16, 1, 7999.00),
+(9, 17, 2, 3999.00),
+(9, 18, 3, 499.00),
+(10, 19, 2, 799.00),
+(10, 20, 4, 199.00),
+(1, 2, 1, 69999.00),
+(2, 11, 1, 899.00),
+(5, 13, 1, 1499.00),
+(6, 10, 2, 599.00),
+(7, 6, 1, 399.00),
+(9, 8, 1, 1499.00);
+
+CREATE TABLE Payments (
+    payment_id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT,
+    payment_date DATE,
+    amount DECIMAL(10,2),
+    payment_method VARCHAR(50),
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id)
+);
+
+INSERT INTO Payments (order_id, payment_date, amount, payment_method) VALUES
+(1, '2023-06-01', 151996.00, 'Credit Card'),
+(2, '2023-06-03', 2197.00, 'UPI'),
+(3, '2023-06-05', 399.00, 'Debit Card'),
+(4, '2023-06-07', 5997.00, 'Net Banking'),
+(5, '2023-06-08', 3496.00, 'UPI'),
+(6, '2023-06-10', 2597.00, 'Cash on Delivery'),
+(7, '2023-06-12', 2797.00, 'Credit Card'),
+(8, '2023-06-15', 12998.00, 'Net Banking'),
+(9, '2023-06-18', 9495.00, 'UPI'),
+(10, '2023-06-20', 2794.00, 'Debit Card');
+
+
+/*🔢	Question
+1.	List all customers from Chennai.
+2.	Show all products under "Electronics" category.
+3.	Find top 5 most expensive products.
+4.	Count how many customers are registered per city.
+5.	Display all orders placed in June 2023.
+6.	What is the total amount paid for order ID 1?
+7.	List all orders and their total items.
+8.	Find total sales (revenue) from the Payments table.
+9.	List orders that include the product "Face Cream".
+10.	Count number of orders per status (Delivered, Cancelled, etc.)
+11.	List customers who placed more than 1 order.
+12.	Show product stock levels less than 20.
+13.	Which customer spent the most? (total payments)
+14.	List all categories and number of products in each.
+15.	Show order_id, customer_name, order_date, and total amount.
+16.	What is the average payment per order?
+17.	List all orders where at least one product quantity > 2.
+18.	Show total sales per category.
+19.	List all products that were never ordered.
+20.	Create a view to show complete order summary (order, items, amount).*/
+
+
+-- 1.	List all customers from Chennai. --
+
+SELECT * FROM Customers WHERE City="Chennai";
+
+-- 2.	Show all products under "Electronics" category. --
+
+SELECT p.name, p.price 
+FROM Products p
+JOIN Categories c ON p.category_id = c.category_id
+WHERE c.category_name = 'Electronics';
+
+-- 3.  Find top 5 most expensive products. --
+
+SELECT name,price FROM products
+ORDER BY price DESC
+LIMIT 5;
+
+-- 4.  Count how many customers are registered per city. --
+
+SELECT city,count(City) AS Total_Customers
+FROM Customers
+GROUP BY City;
+
+-- 5.	Display all orders placed in June 2023. --
+
+SELECT * FROM Orders 
+WHERE Order_date BETWEEN '2023-06-01' AND '2023-06-30';
+
+-- 6.	What is the total amount paid for order ID 1 --
+
+SELECT SUM(quantity * price) AS total_amount 
+FROM OrderItems 
+WHERE order_id = 1;
+
+-- 7.	List all orders and their total items. --
+
+SELECT Order_Id,COUNT(Order_id) AS Total_orders
+FROM OrderItems
+GROUP BY Order_id;
+
+-- 8.	Find total sales (revenue) from the Payments table. --
+
+SELECT SUM(amount) AS Total_Sales FROM Payments;
+
+-- 9.	List orders that include the product "Face Cream". --
+
+SELECT DISTINCT o.order_id, o.order_date
+FROM Orders o
+JOIN OrderItems oi ON o.order_id = oi.order_id
+JOIN Products p ON oi.product_id = p.product_id
+WHERE p.name = 'Face Cream';
+
+-- 10.	Count number of orders per status (Delivered, Cancelled, etc.) --
+
+SELECT Status,COUNT(Status) AS Total
+FROM Orders
+GROUP BY Status;
+
+-- 11.	List customers who placed more than 1 order. --
+
+SELECT customer_id, COUNT(*) AS order_count
+FROM Orders
+GROUP BY customer_id
+HAVING COUNT(*) > 1;
+
+-- 12.	Show product stock levels less than 20.--
+
+SELECT Name,Stock FROM Products
+WHERE Stock < 20;
+
+-- 13.	Which customer spent the most? (total payments) --
+
+SELECT c.name, SUM(p.amount) AS total_spent
+FROM Payments p
+JOIN Orders o ON p.order_id = o.order_id
+JOIN Customers c ON o.customer_id = c.customer_id
+GROUP BY c.name
+ORDER BY total_spent DESC
+LIMIT 1;
+
+-- 14.	List all categories and number of products in each.--
+
+SELECT c.category_name, COUNT(p.product_id) AS total_products
+FROM Categories c
+LEFT JOIN Products p ON c.category_id = p.category_id
+GROUP BY c.category_name;
+
+-- 15.	Show order_id, customer_name, order_date, and total amount. --
+
+SELECT o.order_id, c.name AS customer_name, o.order_date, SUM(oi.quantity * oi.price) AS total_amount
+FROM Orders o
+JOIN Customers c ON o.customer_id = c.customer_id
+JOIN OrderItems oi ON o.order_id = oi.order_id
+GROUP BY o.order_id, c.name, o.order_date;
+
+-- 16.	What is the average payment per order? --
+
+SELECT AVG(Amount) As Avg_Payment FROM Payments;
+
+-- 17.	List all orders where at least one product quantity > 2. --
+
+SELECT DISTINCT order_id 
+FROM OrderItems 
+WHERE quantity > 2;
+
+-- 18.	Show total sales per category.--
+
+SELECT c.category_name, SUM(oi.quantity * oi.price) AS category_sales
+FROM OrderItems oi
+JOIN Products p ON oi.product_id = p.product_id
+JOIN Categories c ON p.category_id = c.category_id
+GROUP BY c.category_name;
+
+-- 19.	List all products that were never ordered. --
+
+SELECT name FROM Products 
+WHERE product_id NOT IN (
+    SELECT DISTINCT product_id FROM OrderItems
+);
+
+-- 20.	Create a view to show complete order summary (order, items, amount). --
+
+CREATE VIEW OrderSummary AS
+SELECT o.order_id, c.name AS customer_name, o.order_date, SUM(oi.quantity * oi.price) AS total_order_value
+FROM Orders o
+JOIN Customers c ON o.customer_id = c.customer_id
+JOIN OrderItems oi ON o.order_id = oi.order_id
+GROUP BY o.order_id, c.name, o.order_date;
